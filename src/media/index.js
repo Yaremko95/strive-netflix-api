@@ -90,8 +90,11 @@ router
   .route("/:id/upload")
   .post(upload.single("avatar"), async (req, res, next) => {
     try {
+      const { id } = req.params;
+      console.log(id);
+      const [name, extension] = req.file.originalname.split(".");
       await fsExtra.writeFile(
-        join(postersFolderPath, req.file.originalname),
+        join(postersFolderPath, `${id}.${extension}`),
         req.file.buffer
       );
       res.send("ok");
