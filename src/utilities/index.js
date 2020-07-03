@@ -15,6 +15,15 @@ const validateBody = () => {
       .withMessage("imdbID is required")
       .not()
       .isEmpty()
+      .custom(async (id) => {
+        let path = join(__dirname, "../media/media.json");
+        let item = await getByID(path, id, "imdbID");
+        if (item.length > 0) {
+          throw new Error("movie  exists in your db");
+        } else {
+          return true;
+        }
+      })
       .withMessage("Can't be Empty"),
   ];
 };

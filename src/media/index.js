@@ -57,6 +57,17 @@ router
       next(e);
     }
   });
+router.route("/search").get(async (req, res, next) => {
+  try {
+    let response = await axios.get(`http://www.omdbapi.com/?apikey=ac60feab`, {
+      params: { ...req.query },
+    });
+    res.send(response.data);
+  } catch (e) {
+    e.httpRequestStatusCode = 400;
+    next(e);
+  }
+});
 router
   .route("/:id")
   .get(async (req, res, next) => {
