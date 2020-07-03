@@ -1,6 +1,7 @@
 const express = require("express");
 const fsExtra = require("fs-extra");
 const uniqid = require("uniqid");
+const multer = require("multer");
 const {
   readFile,
   validateBody,
@@ -15,7 +16,8 @@ const { validationResult } = require("express-validator");
 const router = express.Router();
 
 const mediaPath = join(__dirname, "media.json");
-
+const postersFolderPath = join(__dirname, "../posters");
+const upload = multer({});
 router
   .route("/")
   .get(async (req, res, next) => {
@@ -80,6 +82,21 @@ router
       res.send(filteredData);
     } catch (e) {
       e.httpRequestStatusCode = 404;
+      next(e);
+    }
+  });
+
+router
+  .route("/:id/upload")
+  .post(upload.single("avatar"), async (req, res, next) => {
+    try {
+      await fsExtra.writeFile(
+        join(postersFolderPath, req.file.originalname),
+        req.file.buffer
+      );
+      res.send("ok");
+    } catch (e) {
+      e.httpRequestStatusCode = 500;
       next(e);
     }
   });
