@@ -33,6 +33,7 @@ router
       }
       let uniqueID = {
         _id: uniqid(),
+        createdAt: new Date(),
       };
       const writtenData = await append(reviewsPath, req.body, uniqueID);
       res.send(writtenData);
@@ -40,6 +41,43 @@ router
       e.httpRequestStatusCode = 500;
     }
   });
-router.route("/:id").get().put().delete();
+router
+  .route("/:id")
+  .get(async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      let movie = await getByID(reviewsPath, id, "_id");
+      res.send(movie);
+    } catch (e) {
+      e.httpRequestStatusCode = 404;
+      next(e);
+    }
+  })
+  .put(validateReviewsBody(), async (req, res, next) => {
+    try {
+      const { id } = req.params;
+
+      let updatedArray = await getByIDAndUpdate(
+        reviewsPath,
+        id,
+        req.body,
+        "_id"
+      );
+      res.send(updatedArray);
+    } catch (e) {
+      e.httpRequestStatusCode = 500;
+      next(e);
+    }
+  })
+  .delete(async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      let filteredData = await remove(reviewsPath, id, "_id");
+      res.send(filteredData);
+    } catch (e) {
+      e.httpRequestStatusCode = 404;
+      next(e);
+    }
+  });
 
 module.exports = router;
