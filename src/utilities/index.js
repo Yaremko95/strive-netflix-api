@@ -10,31 +10,12 @@ const {
 
 const validateBody = () => {
   return [
-    check("Title")
+    check("imdbID")
       .exists()
-      .withMessage("title is required")
+      .withMessage("imdbID is required")
       .not()
       .isEmpty()
       .withMessage("Can't be Empty"),
-    check("Year")
-      .exists()
-      .withMessage("year is required")
-      .not()
-      .isEmpty()
-      .withMessage("Can't be Empty"),
-    check("Type")
-      .exists()
-      .withMessage("type is required")
-      .not()
-      .isEmpty()
-      .withMessage("Can't be Empty"),
-    check("Poster")
-      .exists()
-      .withMessage("Poster is required")
-      .not()
-      .isEmpty()
-      .withMessage("Can't be Empty")
-      .isURL(),
   ];
 };
 
@@ -76,7 +57,7 @@ const readFile = async (path) => {
   return data;
 };
 
-const append = async (path, data, uniqueKey) => {
+const append = async (path, data, uniqueKey = {}) => {
   let dataArray = await readFile(path);
 
   dataArray.push({ ...data, ...uniqueKey });

@@ -2,6 +2,7 @@ const express = require("express");
 const fsExtra = require("fs-extra");
 const uniqid = require("uniqid");
 const multer = require("multer");
+const axios = require("axios");
 const {
   readFile,
   validateBody,
@@ -37,12 +38,20 @@ router
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-
-      let uniqueID = {
-        imdbID: uniqid("tt"),
+      const { imdbID } = req.body;
+      let response = await axios.get(
+        `http://www.omdbapi.com/?apikey=ac60feab&i=${imdbID}`
+      );
+      const { Title, Year, Type, Poster } = response.data;
+      let newData = {
+        Title,
+        Year,
+        Type,
+        Poster,
+        imdbID,
       };
-      const writtenData = await append(mediaPath, req.body, uniqueID);
-      res.send(writtenData);
+      let updatedList = await append(mediaPath, newData);
+      res.send(updatedList);
     } catch (e) {
       e.httpRequestStatusCode = 400;
       next(e);
