@@ -1,5 +1,6 @@
 const express = require("express");
 const fsExtra = require("fs-extra");
+const uniqid = require("uniqid");
 const {
   readFile,
   validateBody,
@@ -33,8 +34,11 @@ router
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-      console.log(req.body);
-      const writtenData = await append(mediaPath, req.body);
+
+      let uniqueID = {
+        imdbID: uniqid("tt"),
+      };
+      const writtenData = await append(mediaPath, req.body, uniqueID);
       res.send(writtenData);
     } catch (e) {
       e.httpRequestStatusCode = 400;
@@ -46,7 +50,7 @@ router
   .get(async (req, res, next) => {
     try {
       const { id } = req.params;
-      let movie = await getByID(mediaPath, id);
+      let movie = await getByID(mediaPath, id, "imdbID");
       res.send(movie);
     } catch (e) {
       e.httpRequestStatusCode = 404;
@@ -56,7 +60,13 @@ router
   .put(validateBody(), async (req, res, next) => {
     try {
       const { id } = req.params;
-      let updatedArray = await getByIDAndUpdate(mediaPath, id, req.body);
+
+      let updatedArray = await getByIDAndUpdate(
+        mediaPath,
+        id,
+        req.body,
+        "imdbID"
+      );
       res.send(updatedArray);
     } catch (e) {
       e.httpRequestStatusCode = 500;
@@ -66,7 +76,7 @@ router
   .delete(async (req, res, next) => {
     try {
       const { id } = req.params;
-      let filteredData = await remove(mediaPath, id);
+      let filteredData = await remove(mediaPath, id, "imdbID");
       res.send(filteredData);
     } catch (e) {
       e.httpRequestStatusCode = 404;
