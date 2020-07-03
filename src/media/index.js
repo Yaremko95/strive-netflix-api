@@ -16,6 +16,7 @@ const { validationResult } = require("express-validator");
 const router = express.Router();
 
 const mediaPath = join(__dirname, "media.json");
+const reviewsPath = join(__dirname, "../reviews/reviews.json");
 const postersFolderPath = join(__dirname, "../posters");
 const upload = multer({});
 router
@@ -103,5 +104,16 @@ router
       next(e);
     }
   });
+
+router.route("/:id/reviews").get(async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    let data = await getByID(reviewsPath, id, "elementId");
+    res.send(data);
+  } catch (e) {
+    e.httpRequestStatusCode = 404;
+    next(e);
+  }
+});
 
 module.exports = router;
