@@ -6,7 +6,7 @@ const app = express();
 
 const whitelist =
   process.env.NODE_ENV === "production"
-    ? [process.env.FE_URL_PROD]
+    ? [process.env.FE_URL_PROD, "http://localhost:3000"]
     : [process.env.FE_URL_DEV];
 
 const corsOptions = {

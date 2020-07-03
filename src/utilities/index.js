@@ -1,6 +1,7 @@
 const fsExtra = require("fs-extra");
 const uniqid = require("uniqid");
 const { join } = require("path");
+const PDFDocument = require("pdfkit");
 const {
   check,
   body,
@@ -92,6 +93,28 @@ const remove = async (path, id, key) => {
   let write = await fsExtra.writeJson(path, dataArray);
   return dataArray;
 };
+
+// const getPdf = async (data, callback) => {
+//   const doc = new PDFDocument();
+//   const directory = join(__dirname, `../pdfs/${data.name}.pdf`);
+//   //const imageDirectory = join(__dirname, `../images/download.jpg`);
+//   doc.pipe(fs.createWriteStream(directory));
+//
+//   doc.font("Helvetica").fontSize(25).text(
+//     `Name: ${data.name}
+//      Description: ${data.description}
+//       Price: ${data.price}
+//       Category: ${data.category}`,
+//     100,
+//     100
+//   );
+//
+//   // doc.image(imageDirectory, {
+//   //   fit: [250, 300],
+//   //   align: "center",
+//   // });
+//   callback(doc);
+// };
 
 module.exports = {
   readFile,
