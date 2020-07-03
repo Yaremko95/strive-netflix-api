@@ -10,6 +10,7 @@ const {
   getByID,
   getByIDAndUpdate,
   remove,
+  getPdf,
 } = require("../utilities");
 const { join } = require("path");
 const { validationResult } = require("express-validator");
@@ -62,9 +63,11 @@ router.route("/search").get(async (req, res, next) => {
     let response = await axios.get(`http://www.omdbapi.com/?apikey=ac60feab`, {
       params: { ...req.query },
     });
-    res.send(response.data);
+
+    res.send(response.data.Search);
   } catch (e) {
     e.httpRequestStatusCode = 400;
+
     next(e);
   }
 });
@@ -73,7 +76,14 @@ router.route("/catalogue").get(async (req, res, next) => {
     let response = await axios.get(`http://www.omdbapi.com/?apikey=ac60feab`, {
       params: { ...req.query },
     });
-    res.send(response.data);
+    const doc = await getPdf(response.data.Search, (doc) => {
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=catalogue.pdf`
+      );
+      doc.pipe(res);
+      doc.end();
+    });
   } catch (e) {
     e.httpRequestStatusCode = 400;
     next(e);
